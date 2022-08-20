@@ -1,8 +1,6 @@
 mod toss_up;
 //mod stackalc;
 
-
-
 /*
 Puesta en comun:
 1. para cada ejercicio agregarlo con "mod file_name;" al inicio del archivo main
