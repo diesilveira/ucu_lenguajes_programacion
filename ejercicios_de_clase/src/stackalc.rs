@@ -36,7 +36,7 @@ fn should_pop_stack(read: String) -> bool {
 
 fn push_read_line_into_stack(line: String, list: &mut Vec<f64>) {
     let mut list_read: Vec<&str>;
-    list_read = line.split(" ").collect::<Vec<_>>();
+    list_read = line.trim().split_whitespace().collect::<Vec<_>>();
     list_read.reverse();
     while list_read.len() != 0 {
         list.push(
