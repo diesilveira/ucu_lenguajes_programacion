@@ -11,7 +11,7 @@ Construir un intérprete para un lenguaje imperativo simple, a partir de una rep
 Programacion en Rust ver [Rust learn](https://www.rust-lang.org/learn)
 
 ### Ejercicio TossUp:
-<img width="524" alt="image" src="https://user-images.githubusercontent.com/53955407/185727997-a68ff7ee-62d1-44df-a1c1-c6609d8d975a.png">
+<img width="524" alt="image" src="https://user-images.githubusercontent.com/53955407/185728025-2b34c023-516d-42dc-99a2-d7ee2b469ed8.png">
 
 
 ### Ejercicio StackAlc:
