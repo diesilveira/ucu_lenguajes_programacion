@@ -1,0 +1,1 @@
+/Users/diesilveira/Desktop/lenguajes_programacion/ucu_lenguajes_programacion/ejercicios_de_clase/target/debug/ejercicios_de_clase: /Users/diesilveira/Desktop/lenguajes_programacion/ucu_lenguajes_programacion/ejercicios_de_clase/src/main.rs /Users/diesilveira/Desktop/lenguajes_programacion/ucu_lenguajes_programacion/ejercicios_de_clase/src/stackalc.rs
