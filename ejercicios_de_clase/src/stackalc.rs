@@ -1,4 +1,5 @@
 use std::io;
+use try_catch::catch;
 
 pub fn stackalc() {
     println!("Tap doubles & tap enter to push, when you want pop only tap enter.");
@@ -13,7 +14,7 @@ pub fn stackalc() {
             break;
         } else {
             if should_pop_stack(line.clone()) {
-                println!("pop: {}", list.pop().unwrap());
+                println!("Pop: {}", list.pop().unwrap());
             } else {
                 push_read_line_into_stack(line.clone(), &mut list);
                 line.clear();
@@ -36,16 +37,16 @@ fn should_pop_stack(read: String) -> bool {
 
 fn push_read_line_into_stack(line: String, list: &mut Vec<f64>) {
     let mut list_read: Vec<&str>;
-    list_read = line.split(" ").collect::<Vec<_>>();
+    list_read = line.trim().split_whitespace().collect::<Vec<_>>();
     list_read.reverse();
     while list_read.len() != 0 {
-        list.push(
-            list_read
-                .pop()
-                .expect("We can't insert in the stack")
-                .trim()
-                .parse::<f64>()
-                .unwrap(),
-        );
+        catch! {
+            try {
+                let _number : f64 = list_read.pop().expect("Can't pop").trim().parse()?;
+                list.push(_number);
+            } catch parse_float_error {
+                println!("Can't push in the stack: {}.", parse_float_error)
+            }
+        }
     }
 }

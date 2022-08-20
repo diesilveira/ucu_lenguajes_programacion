@@ -1,5 +1,5 @@
-mod toss_up;
-//mod stackalc;
+// mod toss_up;
+mod stackalc;
 
 /*
 Puesta en comun:
@@ -11,6 +11,6 @@ Puesta en comun:
 Luego de terminados los ejercicios y probados comentar la llamda y dejar descomentado solo el ultimo.
 */
 fn main() {
-    toss_up::toss_up();
-    // stackalc::stackalc();
+    // toss_up::toss_up();
+    stackalc::stackalc();
 }
