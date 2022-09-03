@@ -1,4 +1,4 @@
-use std::io;
+use std::{io, f64::NAN};
 use try_catch::catch;
 
 pub fn stackalc2() {
@@ -47,6 +47,15 @@ fn push_read_line_into_stack(line: String, list: &mut Vec<f64>) {
                     "ADD" => add(list),
                     "SUB" => sub(list),
                     "MULT" => mult(list),
+                    "EQ" => eq(list),
+                    "DIFF" => diff(list),
+                    "LT" => lt(list),
+                    "LTE" => lte(list),
+                    "GT" => gt(list),
+                    "GTE" => gte(list),
+                    "NOT" => not(list),
+                    "AND" => and(list),
+                    "OR" => or(list),
                     _ =>  {
                         let _number : f64 = value.trim().parse()?;
                         list.push(_number);
@@ -58,6 +67,17 @@ fn push_read_line_into_stack(line: String, list: &mut Vec<f64>) {
         }
     }
     print_list(&mut list.clone());
+}
+
+fn print_list(list: &mut Vec<f64>) {
+    list.reverse();
+    print!("[");
+    while list.len() > 1 {
+        print!("{},", list.pop().unwrap());
+    }
+    print!("{}", list.pop().unwrap());
+    print!("]");
+    println!("");
 }
 
 fn mult(list: &mut Vec<f64>) {
@@ -78,12 +98,91 @@ fn sub(list: &mut Vec<f64>) {
     list.push(second - first);
 }
 
-fn print_list(list: &mut Vec<f64>) {
-    print!("[");
-    while list.len() > 1 {
-        print!("{},", list.pop().unwrap());
+fn eq(list: &mut Vec<f64>) {
+    let first = list.pop().unwrap();
+    let second = list.pop().unwrap();
+    if first == second {
+        list.push(1.0);
+    } else {
+        list.push(0.0);
     }
-    print!("{}", list.pop().unwrap());
-    print!("]");
-    println!("");
+}
+
+fn diff(list: &mut Vec<f64>) {
+    let first = list.pop().unwrap();
+    let second = list.pop().unwrap();
+    if first != second {
+        list.push(1.0);
+    } else {
+        list.push(0.0);
+    }
+}
+
+fn lt(list: &mut Vec<f64>) {
+    let first = list.pop().unwrap();
+    let second = list.pop().unwrap();
+    if second < first  {
+        list.push(1.0);
+    } else {
+        list.push(0.0);
+    }
+}
+
+fn lte(list: &mut Vec<f64>) {
+    let first = list.pop().unwrap();
+    let second = list.pop().unwrap();
+    if second <= first {
+        list.push(1.0);
+    } else {
+        list.push(0.0);
+    }
+}
+
+fn gt(list: &mut Vec<f64>) {
+    let first = list.pop().unwrap();
+    let second = list.pop().unwrap();
+    if second > first {
+        list.push(1.0);
+    } else {
+        list.push(0.0);
+    }
+}
+
+fn gte(list: &mut Vec<f64>) {
+    let first = list.pop().unwrap();
+    let second = list.pop().unwrap();
+    if second >= first {
+        list.push(1.0);
+    } else {
+        list.push(0.0);
+    }
+}
+
+fn not(list: &mut Vec<f64>) {
+    let first = list.pop().unwrap();
+    if first != 0.0 || first != NAN {
+        list.push(0.0);
+    } else {
+        list.push(1.0);
+    }
+}
+
+fn and(list: &mut Vec<f64>) {
+    let first = list.pop().unwrap();
+    let second = list.pop().unwrap();
+    if (first != 0.0) && (second != 0.0) {
+        list.push(1.0);
+    } else {
+        list.push(0.0);
+    }
+}
+
+fn or(list: &mut Vec<f64>) {
+    let first = list.pop().unwrap();
+    let second = list.pop().unwrap();
+    if (first != 0.0) || (second != 0.0) {
+        list.push(1.0);
+    } else {
+        list.push(0.0);
+    }
 }
