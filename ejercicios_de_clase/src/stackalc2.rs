@@ -1,7 +1,16 @@
 use std::{io, f64::NAN};
 use try_catch::catch;
 
+
+
 pub fn stackalc2() {
+    // Declare 10 variables
+    let mut variables = Vec::new();
+    let mut value = 0;
+    while value < 10 {
+        variables.push(NAN);
+        value = value + 1;
+    }
     println!("Tap doubles & tap enter to push, when you want pop only tap enter.");
     let mut line = String::new();
     let mut list: Vec<f64> = Vec::new();
@@ -16,7 +25,7 @@ pub fn stackalc2() {
             if should_pop_stack(line.clone()) {
                 break;
             } else {
-                push_read_line_into_stack(line.clone(), &mut list);
+                push_read_line_into_stack(line.clone(), &mut list, &mut variables);
                 line.clear();
             }
         }
@@ -35,14 +44,20 @@ fn should_pop_stack(read: String) -> bool {
     return read.trim().is_empty();
 }
 
-fn push_read_line_into_stack(line: String, list: &mut Vec<f64>) {
+fn push_read_line_into_stack(line: String, list: &mut Vec<f64>, variables: &mut Vec<f64>) {
     let mut list_read: Vec<&str>;
     list_read = line.trim().split_whitespace().collect::<Vec<_>>();
     list_read.reverse();
     while list_read.len() != 0 {
         catch! {
             try {
-                let value: &str = &list_read.pop().unwrap().to_uppercase();
+                let mut value: &str = &list_read.pop().unwrap().to_uppercase();
+                let values: Vec<&str> = value.split(":").collect();
+                let mut position = 0;
+                if values.len() > 1 {
+                    value = values[0];
+                    position = values[1].parse().expect("Not a number");
+                }
                 match value {
                     "ADD" => add(list),
                     "SUB" => sub(list),
@@ -56,6 +71,10 @@ fn push_read_line_into_stack(line: String, list: &mut Vec<f64>) {
                     "NOT" => not(list),
                     "AND" => and(list),
                     "OR" => or(list),
+                    "GET" => get_value(list, (variables).to_vec(), position),
+                    "SET" => set_value(list, variables, position),
+                    "POP" => println!("{}", list.pop().unwrap()),
+                    "DUP" => dup(list),
                     _ =>  {
                         let _number : f64 = value.trim().parse()?;
                         list.push(_number);
@@ -75,7 +94,9 @@ fn print_list(list: &mut Vec<f64>) {
     while list.len() > 1 {
         print!("{},", list.pop().unwrap());
     }
-    print!("{}", list.pop().unwrap());
+    if list.len() == 1 {
+        print!("{}", list.pop().unwrap());
+    }
     print!("]");
     println!("");
 }
@@ -185,4 +206,20 @@ fn or(list: &mut Vec<f64>) {
     } else {
         list.push(0.0);
     }
+}
+
+fn get_value(list: &mut Vec<f64>, variables: Vec<f64>, position: usize) {
+    let value_to_add: f64 = variables[position];
+    list.push(value_to_add);
+}
+
+fn set_value(list: &mut Vec<f64>, variables:&mut Vec<f64>, position: usize) {
+    let value_to_save = list.pop().unwrap();
+    variables[position] = value_to_save;
+}
+
+fn dup(list: &mut Vec<f64>) {
+    let value_to_save = list.pop().unwrap();
+    list.push(value_to_save);
+    list.push(value_to_save);
 }
