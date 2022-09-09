@@ -90,8 +90,8 @@ fn push_read_line_into_stack(line: String, list: &mut Vec<f64>, variables: &mut 
             }
         }
     }
-    print_variables(&mut variables.clone());
     print_list(&mut list.clone());
+    print_variables(&mut variables.clone());
 }
 
 fn print_list(list: &mut Vec<f64>) {
@@ -104,11 +104,10 @@ fn print_list(list: &mut Vec<f64>) {
         print!("{}", list.pop().unwrap());
     }
     print!("]");
-    println!("");
 }
 
 fn print_variables(list: &mut Vec<f64>) {
-    print!("Variables: [");
+    print!(" | [");
     while list.len() > 1 {
         print!("{},", list.pop().unwrap());
     }
