@@ -1,6 +1,6 @@
 // mod toss_up;
 // mod stackalc;
-mod stackalc2;
+mod stackalc3;
 
 /*
 Puesta en comun:
@@ -13,5 +13,5 @@ Luego de terminados los ejercicios y probados comentar la llamda y dejar descome
 */
 fn main() {
     // toss_up::toss_up();
-    stackalc2::stackalc2();
+    stackalc3::stackalc3();
 }

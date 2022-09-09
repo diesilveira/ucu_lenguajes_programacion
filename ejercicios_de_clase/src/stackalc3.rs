@@ -3,7 +3,7 @@ use try_catch::catch;
 
 
 
-pub fn stackalc2() {
+pub fn stackalc3() {
     // Declare 10 variables
     let mut variables = Vec::new();
     let mut value = 0;
@@ -45,15 +45,16 @@ fn should_pop_stack(read: String) -> bool {
 }
 
 fn push_read_line_into_stack(line: String, list: &mut Vec<f64>, variables: &mut Vec<f64>) {
-    let mut list_read: Vec<&str>;
-    list_read = line.trim().split_whitespace().collect::<Vec<_>>();
-    list_read.reverse();
-    while list_read.len() != 0 {
+    let list_read: Vec<&str>;
+    list_read = line.trim().split_whitespace().collect::<Vec<_>>();    
+    let mut i = 0;
+    while 0 <= i && i < list_read.len() as i32 {
         catch! {
             try {
-                let mut value: &str = &list_read.pop().unwrap().to_uppercase();
+
+                let mut value: &str = &list_read[i as usize].to_uppercase();
                 let values: Vec<&str> = value.split(":").collect();
-                let mut position = 0;
+                let mut position:i32 = 0;
                 if values.len() > 1 {
                     value = values[0];
                     position = values[1].parse().expect("Not a number");
@@ -71,15 +72,19 @@ fn push_read_line_into_stack(line: String, list: &mut Vec<f64>, variables: &mut 
                     "NOT" => not(list),
                     "AND" => and(list),
                     "OR" => or(list),
-                    "GET" => get_value(list, (variables).to_vec(), position),
-                    "SET" => set_value(list, variables, position),
+                    "GET" => get_value(list, (variables).to_vec(), position as usize),
+                    "SET" => set_value(list, variables, position as usize),
                     "POP" => println!("{}", list.pop().unwrap()),
                     "DUP" => dup(list),
+                    "UJP" => ujp(position, &mut i),
+                    "CJP" => cjp(list, position, &mut i),
                     _ =>  {
                         let _number : f64 = value.trim().parse()?;
                         list.push(_number);
                     }
                 }
+                
+                i = i+1;
             } catch parse_float_error {
                 println!("Can't push in the stack: {}.", parse_float_error)
             }
@@ -235,4 +240,15 @@ fn dup(list: &mut Vec<f64>) {
     let value_to_save = list.pop().unwrap();
     list.push(value_to_save);
     list.push(value_to_save);
+}
+
+fn ujp(increment: i32, i:&mut i32) {
+    *i += increment-1;
+}
+
+fn cjp(list: &mut Vec<f64>, increment: i32, i:&mut i32) {
+    let value = list.pop().unwrap();
+    if value != 0.0 {
+        *i += increment-1;
+    }
 }
