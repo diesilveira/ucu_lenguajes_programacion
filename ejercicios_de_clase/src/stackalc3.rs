@@ -74,7 +74,7 @@ fn push_read_line_into_stack(line: String, list: &mut Vec<f64>, variables: &mut 
                     "OR" => or(list),
                     "GET" => get_value(list, (variables).to_vec(), position as usize),
                     "SET" => set_value(list, variables, position as usize),
-                    "POP" => println!("{}", list.pop().unwrap()),
+                    "POP" => {list.pop();},
                     "DUP" => dup(list),
                     "UJP" => ujp(position, &mut i),
                     "CJP" => cjp(list, position, &mut i),
