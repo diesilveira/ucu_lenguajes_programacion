@@ -1,5 +1,5 @@
 
-areEqual:: [Int] -> Bool
+areEqual:: Eq a => [a] -> Bool
 areEqual [] = error "!"
 areEqual [x] = error "!"
-areEqual (x:xs) = [] == [y | y <- xs, y /= x]
+areEqual (x:xs) = null [y | y <- xs, y /= x]
