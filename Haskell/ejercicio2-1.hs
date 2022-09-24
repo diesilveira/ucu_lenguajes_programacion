@@ -12,20 +12,26 @@ data SchemyExp = SchemyNumber Double
   deriving (Eq, Show)
 
 
-eval:: (Map String Double) -> SchemyExp -> SchemyExp
-eval _ (SchemyNumber x) = x
-eval env (SchemyAdd x y) = (eval env x ) + (eval env y)
-eval env (SchemyMult x y) = (eval env x) * (eval env y)
+eval:: (Map String SchemyExp) -> SchemyExp -> SchemyExp
+eval _ x@(SchemyNumber _) = x
+eval env x@(SchemyAdd _ _) = (SchemyNumber (evalNumber env x))
+eval env x@(SchemyMult _ _) = (SchemyNumber (evalNumber env x))
+eval env x@(SchemyLT _ _) = (SchemyNumber (evalNumber env x))
 eval env (SchemySymbol x) = env ! x
-eval env (SchemyBool x) = x
-eval env (SchemyNot x) = not (eval env x) 
-eval env (SchemyAnd x y) = (eval env x ) && (eval env y)
-eval env (SchemyEquals x y) = (eval env x ) == (eval env y)
-eval env (SchemyLT x y) = (eval env x ) <= (eval env y)
+eval env x@(SchemyBool _) = x
+eval env x@(SchemyNot _) = (SchemyBool (evalBool env x))
+eval env x@(SchemyAnd _ _) = (SchemyBool (evalBool env x))
+eval env (SchemyEquals x y) = (SchemyBool ((eval env x ) == (eval env y)))
 -- Forma de hacer que no explote cuando no conoce la string
 -- eval (SchemySymbol x) env = findWithDefault 0 x env
 
-evalNumber:: (Map String Double) -> SchemyExp -> SchemyExp
+evalNumber:: (Map String SchemyExp) -> SchemyExp -> Double
+evalNumber env (SchemyAdd x y) = (evalNumber env x ) + (evalNumber env y)
+evalNumber env (SchemyMult x y) = (evalNumber env x ) * (evalNumber env y)
+evalNumber env (SchemyNumber x) = x
 
 
-evalBool:: (Map String Double) -> SchemyExp -> SchemyExp
+evalBool:: (Map String SchemyExp) -> SchemyExp -> Bool
+evalBool env (SchemyNot x) = not (evalBool env x)
+evalBool env (SchemyAnd x y) = (evalBool env x ) && (evalBool env y)
+evalBool env (SchemyBool x) = x
