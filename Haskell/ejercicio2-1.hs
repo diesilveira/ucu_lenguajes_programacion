@@ -16,7 +16,7 @@ eval:: (Map String SchemyExp) -> SchemyExp -> SchemyExp
 eval _ x@(SchemyNumber _) = x
 eval env x@(SchemyAdd _ _) = (SchemyNumber (evalNumber env x))
 eval env x@(SchemyMult _ _) = (SchemyNumber (evalNumber env x))
-eval env x@(SchemyLT _ _) = (SchemyNumber (evalNumber env x))
+eval env (SchemyLT x y) = (SchemyBool ((evalNumber env x) <= (evalNumber env y)))
 eval env (SchemySymbol x) = env ! x
 eval env x@(SchemyBool _) = x
 eval env x@(SchemyNot _) = (SchemyBool (evalBool env x))
@@ -28,10 +28,12 @@ eval env (SchemyEquals x y) = (SchemyBool ((eval env x ) == (eval env y)))
 evalNumber:: (Map String SchemyExp) -> SchemyExp -> Double
 evalNumber env (SchemyAdd x y) = (evalNumber env x ) + (evalNumber env y)
 evalNumber env (SchemyMult x y) = (evalNumber env x ) * (evalNumber env y)
+evalNumber env (SchemySymbol x) = evalNumber env (env ! x)
 evalNumber env (SchemyNumber x) = x
 
 
 evalBool:: (Map String SchemyExp) -> SchemyExp -> Bool
 evalBool env (SchemyNot x) = not (evalBool env x)
 evalBool env (SchemyAnd x y) = (evalBool env x ) && (evalBool env y)
+evalBool env (SchemySymbol x) = evalBool env (env ! x)
 evalBool env (SchemyBool x) = x
