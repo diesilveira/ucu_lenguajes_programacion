@@ -62,9 +62,16 @@ evalProcedure env (SchemySymbol y) = evalProcedure env (env ! y)
 
 subProc:: SchemyEnv -> [SchemyExp] -> SchemyExp
 subProc _ [SchemyNumber x1, SchemyNumber x2] = SchemyNumber (x1-x2)
-subProc env ((SchemyNumber x):(SchemyNumber y):xs) = subProc env ((SchemyNumber (x-y)):xs)
+subProc env (SchemyNumber x: SchemyNumber y:xs) = subProc env (SchemyNumber (x-y):xs)
 
 divProc:: SchemyEnv -> [SchemyExp] -> SchemyExp
 divProc _ [SchemyNumber x1, SchemyNumber x2] = SchemyNumber (x1/x2)
-divProc env ((SchemyNumber x):(SchemyNumber y):xs) = subProc env ((SchemyNumber (x/y)):xs)
+divProc env (SchemyNumber x: SchemyNumber y:xs) = divProc env (SchemyNumber (x/y):xs)
 
+lteProc:: SchemyEnv -> [SchemyExp] -> SchemyExp
+lteProc _ [SchemyBool x1, SchemyBool x2] = SchemyBool (x1<x2)
+lteProc env (SchemyBool x: SchemyBool y:xs) = lteProc env (SchemyBool (x<y):xs)
+
+orProc:: SchemyEnv -> [SchemyExp] -> SchemyExp
+orProc _ [SchemyBool x1, SchemyBool x2] = SchemyBool (x1||x2)
+orProc env (SchemyBool x: SchemyBool y:xs) = orProc env (SchemyBool (x||y):xs)
