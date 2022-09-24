@@ -9,10 +9,25 @@ data SchemyExp = SchemyNumber Double
   | SchemyEquals SchemyExp SchemyExp
   | SchemyLT SchemyExp SchemyExp
   | SchemyAnd SchemyExp SchemyExp
-  deriving (Eq, Show)
+  | SchemyProcedure Procedure
+  | SchemyForm SchemyExp [SchemyExp]
 
+instance Show SchemyExp where
+  show (SchemyBool b) = "(SchemyBool "++ (show b) ++")"
+  show (SchemyNumber d) = "(SchemyNumber "++ (show d) ++")"
+  show (SchemySymbol s) = "(SchemySymbol "++ (show s) ++")"
+  show (SchemyForm exp exps) = "(SchemyForm "++ (show exp) ++ " " ++ (show exps) ++")"
+  show (SchemyProcedure p) = "(SchemyProcedure ?)"
 
-eval:: (Map String SchemyExp) -> SchemyExp -> SchemyExp
+instance Eq SchemyExp where
+  (SchemyBool a) == (SchemyBool b) = a == b
+  (SchemyNumber a) == (SchemyNumber b) = a == b
+  (SchemySymbol a) == (SchemySymbol b) = a == b
+
+type SchemyEnv = Map String SchemyExp
+type Procedure = [SchemyExp] -> SchemyExp
+
+eval:: SchemyEnv -> SchemyExp -> SchemyExp
 eval _ x@(SchemyNumber _) = x
 eval env x@(SchemyAdd _ _) = (SchemyNumber (evalNumber env x))
 eval env x@(SchemyMult _ _) = (SchemyNumber (evalNumber env x))
@@ -22,18 +37,33 @@ eval env x@(SchemyBool _) = x
 eval env x@(SchemyNot _) = (SchemyBool (evalBool env x))
 eval env x@(SchemyAnd _ _) = (SchemyBool (evalBool env x))
 eval env (SchemyEquals x y) = (SchemyBool ((eval env x ) == (eval env y)))
+eval env x@(SchemyProcedure _) = x
+eval env (SchemyForm (SchemyProcedure p) xs) = (evalProcedure p) env (map (eval env) xs)
 -- Forma de hacer que no explote cuando no conoce la string
 -- eval (SchemySymbol x) env = findWithDefault 0 x env
 
-evalNumber:: (Map String SchemyExp) -> SchemyExp -> Double
+evalNumber:: SchemyEnv -> SchemyExp -> Double
 evalNumber env (SchemyAdd x y) = (evalNumber env x ) + (evalNumber env y)
 evalNumber env (SchemyMult x y) = (evalNumber env x ) * (evalNumber env y)
 evalNumber env (SchemySymbol x) = evalNumber env (env ! x)
 evalNumber env (SchemyNumber x) = x
 
 
-evalBool:: (Map String SchemyExp) -> SchemyExp -> Bool
+evalBool:: SchemyEnv -> SchemyExp -> Bool
 evalBool env (SchemyNot x) = not (evalBool env x)
 evalBool env (SchemyAnd x y) = (evalBool env x ) && (evalBool env y)
 evalBool env (SchemySymbol x) = evalBool env (env ! x)
 evalBool env (SchemyBool x) = x
+
+evalProcedure:: SchemyEnv -> SchemyExp -> Procedure
+evalProcedure env (SchemySymbol y) = (env ! y)
+
+
+subProc:: SchemyEnv -> [SchemyExp] -> SchemyExp
+subProc _ [SchemyNumber x1, SchemyNumber x2] = SchemyNumber (x1-x2)
+subProc env ((SchemyNumber x):(SchemyNumber y):xs) = subProc env ((SchemyNumber (x-y)):xs)
+
+divProc:: SchemyEnv -> [SchemyExp] -> SchemyExp
+divProc _ [SchemyNumber x1, SchemyNumber x2] = SchemyNumber (x1/x2)
+divProc env ((SchemyNumber x):(SchemyNumber y):xs) = subProc env ((SchemyNumber (x/y)):xs)
+
