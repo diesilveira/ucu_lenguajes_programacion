@@ -25,7 +25,7 @@ instance Eq SchemyExp where
   (SchemySymbol a) == (SchemySymbol b) = a == b
 
 type SchemyEnv = Map String SchemyExp
-type Procedure = [SchemyExp] -> SchemyExp
+type Procedure = SchemyEnv -> [SchemyExp] -> SchemyExp
 
 eval:: SchemyEnv -> SchemyExp -> SchemyExp
 eval _ x@(SchemyNumber _) = x
@@ -38,7 +38,7 @@ eval env x@(SchemyNot _) = (SchemyBool (evalBool env x))
 eval env x@(SchemyAnd _ _) = (SchemyBool (evalBool env x))
 eval env (SchemyEquals x y) = (SchemyBool ((eval env x ) == (eval env y)))
 eval env x@(SchemyProcedure _) = x
-eval env (SchemyForm (SchemyProcedure p) xs) = (evalProcedure p) env (map (eval env) xs)
+eval env (SchemyForm p xs) = (evalProcedure env p) env (map (eval env) xs)
 -- Forma de hacer que no explote cuando no conoce la string
 -- eval (SchemySymbol x) env = findWithDefault 0 x env
 
@@ -56,7 +56,8 @@ evalBool env (SchemySymbol x) = evalBool env (env ! x)
 evalBool env (SchemyBool x) = x
 
 evalProcedure:: SchemyEnv -> SchemyExp -> Procedure
-evalProcedure env (SchemySymbol y) = (env ! y)
+evalProcedure env (SchemyProcedure x) = x
+evalProcedure env (SchemySymbol y) = evalProcedure env (env ! y)
 
 
 subProc:: SchemyEnv -> [SchemyExp] -> SchemyExp
