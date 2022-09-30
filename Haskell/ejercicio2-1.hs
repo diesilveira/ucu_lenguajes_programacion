@@ -1,3 +1,10 @@
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Redundant bracket" #-}
+{-# HLINT ignore "Use infix" #-}
+{-# HLINT ignore "Avoid lambda using `infix`" #-}
+{-# HLINT ignore "Use unwords" #-}
+{-# HLINT ignore "Use when" #-}
 import Data.Map.Strict (Map, fromList, findWithDefault, (!))
 import Data.Char (isDigit, isSpace)
 import Data.List (intercalate)
