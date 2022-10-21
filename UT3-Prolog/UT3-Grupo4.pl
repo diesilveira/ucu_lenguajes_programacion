@@ -39,4 +39,5 @@ propEval(cond(X,Y),A,R) :- propEval(X,A,R1), propEval(Y,A,R2), truthTable(cond(R
 propEval(bicond(X,Y),A,R) :- propEval(X,A,R1), propEval(Y,A,R2), truthTable(bicond(R1,R2),R).
 
 
-
+zip([], , []).
+zip(, [], []).
