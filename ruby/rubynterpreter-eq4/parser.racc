@@ -1,0 +1,135 @@
+# Generate Ruby code with `racc parser.racc -o parser.rb`
+
+class Parser
+
+  prechigh
+    left '||'
+    left '&&'
+    nonassoc '==' '!=' '<' '<=' '>' '>='
+    left '*' '/'
+    left '+' '-'
+    left UMINUS
+    left '!'
+  preclow
+  options no_result_var
+
+rule
+  target
+    : stmt { val[0] }
+    | exp { val[0] }
+
+  stmt
+    : ID '=' exp ';'
+      { Assignment.new(val[0], val[2]) }
+    | '{' stmts '}'
+      { Block.new(val[1]) }
+    | '{' '}'
+      { Block.new() }
+    | 'if' '(' exp ')' stmt 'else' stmt
+      { IfThenElse.new(val[2], val[4], val[6]) }
+    | 'if' '(' exp ')' stmt
+      { IfThenElse.new(val[2], val[4], nil) }
+    | 'while' '(' exp ')' stmt
+      { WhileDo.new(val[2], val[4]) }
+    | 'print' '(' exp ')' ';'
+      { PrintStmt.new(val[2]) }
+  stmts 
+    : stmt
+      { [val[0]] }
+    | stmts stmt
+      { val[0] << val[1] }
+  exp
+    : ID
+      { VariableExp.new(val[0]) }
+    | NUM
+      { Numeral.new(val[0]) }
+    | BOOL
+      { TruthValue.new(val[0]) }
+    | '-' exp =UMINUS
+      { Minus.new(val[1]) }
+    | '!' exp
+      { Negation.new(val[1]) }
+    | exp '+' exp
+      { Addition.new(val[0], val[2]) }
+    | exp '-' exp
+      { Subtraction.new(val[0], val[2]) }
+    | exp '*' exp
+      { Multiplication.new(val[0], val[2]) }
+    | exp '/' exp
+      { Division.new(val[0], val[2]) }
+    | exp '==' exp
+      { ComparisonEqual.new(val[0], val[2]) }
+    | exp '!=' exp
+      { ComparisonDifferent.new(val[0], val[2]) }
+    | exp '<' exp
+      { ComparisonLessThan.new(val[0], val[2]) }
+    | exp '<=' exp
+      { ComparisonLessThanOrEqual.new(val[0], val[2]) }
+    | exp '>' exp
+      { ComparisonGreaterThan.new(val[0], val[2]) }
+    | exp '>=' exp
+      { ComparisonGreaterThanOrEqual.new(val[0], val[2]) }
+    | exp '&&' exp
+      { LogicalAnd.new(val[0], val[2]) }
+    | exp '||' exp
+      { LogicalOr.new(val[0], val[2]) }
+    | '(' exp ')'
+      { val[1] }
+
+end
+
+---- header ----
+
+require 'strscan'
+require_relative 'expressions'
+require_relative 'statements'
+
+class Lexer
+  NUMBER = /\d+(\.\d+)?/
+  BOOL = /true|false/
+  KEYWORDS = /if|else|while|print/
+  ID = /[a-zA-Z_]\w*/
+  OPERS = /[-+*\/(){};]|[!=<>]=?|&&|\|\|/
+  IGNORE = /(\/\/.*(\n|$)|\s)+/
+  
+  def initialize(input)
+    @ss = StringScanner.new(input)
+  end
+
+  def next_token
+    @ss.scan(IGNORE)
+    return if @ss.eos?
+    case
+    when text = @ss.scan(NUMBER) then [:NUM, text.to_f]
+    when text = @ss.scan(BOOL) then [:BOOL, text == "true"]
+    when text = @ss.scan(KEYWORDS) then [text, text]
+    when text = @ss.scan(ID) then [:ID, text]
+    when text = @ss.scan(OPERS) then [text, text]
+    else
+      throw "Unexpected character #{@ss.getch}!"
+    end
+  end
+end
+
+---- inner ----
+
+def next_token
+  @lexer.next_token
+end
+
+def tokenize_string(input)
+  @lexer = Lexer.new(input)
+  tokens = []
+  while token = @lexer.next_token
+    tokens << token
+  end
+  tokens
+end
+
+def parse_string(input)
+  @lexer = Lexer.new(input)
+  do_parse
+end
+
+
+---- footer ----
