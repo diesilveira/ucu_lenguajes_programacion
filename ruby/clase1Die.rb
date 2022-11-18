@@ -35,6 +35,20 @@ class Deck
         return Deck.new(@cards.shift(n))
     end
 
+    def peep()
+        @cards[0]
+    end
+
+    def suitCount(palo)
+        count = 0
+        @cards.each do |carta|
+            if carta.suit == palo
+                count += 1
+            end
+        end
+        return count
+    end
+
     def self.full()
         cards = []
         for i in 1..12 do
@@ -48,5 +62,13 @@ end
 
 # require './clase1.rb' to load on irb
 if __FILE__ == $0
-    # toss_up()
+    deck = Deck.full()
+
+    puts(deck.peep())
+    puts(deck.peep())
+    deck.shuffle()
+    puts(deck.peep())
+
+    puts(deck.suitCount("Basto"))
+
 end

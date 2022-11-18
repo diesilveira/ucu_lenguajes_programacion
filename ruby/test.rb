@@ -35,7 +35,11 @@ class MegaGreeter
     end
   end
   
-  
+def diego():
+  puts "no apelar"
+end
+
+  a = String.new("digo!")
   if __FILE__ == $0
     mg = MegaGreeter.new
     mg.say_hi
@@ -56,4 +60,9 @@ class MegaGreeter
     mg.names = nil
     mg.say_hi
     mg.say_bye
+
+    puts a
+    mg.say_hey?
+
+    diego
   end

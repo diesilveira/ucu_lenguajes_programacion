@@ -14,6 +14,10 @@ class Expression
   def evaluate(state)
     throw "#{self.class.name}.evaluate() is not implemented!"
   end
+
+  def variables(state)
+    throw "#{self.class.name}.evaluate() is not implemented!"
+  end
 end
 
 # Representation of variables in expressions, e.g. `(x)`.
@@ -28,6 +32,10 @@ class VariableExp < Expression
 
   def evaluate(state = {})
     state[@identifier]
+  end
+
+  def variables()
+    return [@identifier]
   end
 
   attr_reader :identifier
@@ -50,6 +58,10 @@ class Numeral < Expression
   def evaluate(state = {})
     @value
   end
+
+  def variables()
+    return []
+  end
 end
 
 # Representation of minus expressions, like `(-right)`.
@@ -64,6 +76,10 @@ class Minus < Expression
 
   def evaluate(state = {})
     -@right.evaluate(state)
+  end
+
+  def variables()
+    return right.variables()
   end
 
   attr_reader :right
@@ -82,6 +98,10 @@ class Addition < Expression
 
   def evaluate(state = {})
     @left.evaluate(state) + @right.evaluate(state)
+  end
+
+  def variables(state)
+    return @left.variables().append(right.variables())
   end
 
   attr_reader :left
@@ -103,6 +123,10 @@ class Subtraction < Expression
     @left.evaluate(state) - @right.evaluate(state)
   end
 
+  def variables(state)
+    return @left.variables().append(right.variables())
+  end
+
   attr_reader :left
   attr_reader :right
 end
@@ -122,6 +146,10 @@ class Multiplication < Expression
     @left.evaluate(state) * @right.evaluate(state)
   end
 
+  def variables(state)
+    return @left.variables().append(right.variables())
+  end
+
   attr_reader :left
   attr_reader :right
 end
@@ -139,6 +167,10 @@ class Division < Expression
 
   def evaluate(state = {})
     @left.evaluate(state) / @right.evaluate(state)
+  end
+
+  def variables(state)
+    return @left.variables().append(right.variables())
   end
 
   attr_reader :left
@@ -162,6 +194,10 @@ class ComparisonEqual < Expression
     @left.evaluate(state) == @right.evaluate(state)
   end
 
+  def variables(state)
+    return @left.variables().append(right.variables())
+  end
+
   attr_reader :left
   attr_reader :right
 end
@@ -179,6 +215,10 @@ class ComparisonDifferent < Expression
 
   def evaluate(state = {})
     @left.evaluate(state) != @right.evaluate(state)
+  end
+
+  def variables(state)
+    return @left.variables().append(right.variables())
   end
 
   attr_reader :left
@@ -200,6 +240,10 @@ class ComparisonLessThan < Expression
     @left.evaluate(state) < @right.evaluate(state)
   end
 
+  def variables(state)
+    return @left.variables().append(right.variables())
+  end
+
   attr_reader :left
   attr_reader :right
 end
@@ -217,6 +261,10 @@ class ComparisonLessThanOrEqual < Expression
 
   def evaluate(state = {})
     @left.evaluate(state) <= @right.evaluate(state)
+  end
+
+  def variables(state)
+    return @left.variables().append(right.variables())
   end
 
   attr_reader :left
@@ -238,6 +286,9 @@ class ComparisonGreaterThan < Expression
     @left.evaluate(state) > @right.evaluate(state)
   end
 
+  def variables(state)
+    return @left.variables().append(right.variables())
+  end
   attr_reader :left
   attr_reader :right
 end
@@ -257,6 +308,9 @@ class ComparisonGreaterThanOrEqual < Expression
     @left.evaluate(state) >= @right.evaluate(state)
   end
 
+  def variables(state)
+    return @left.variables().append(right.variables())
+  end
   attr_reader :left
   attr_reader :right
 end
@@ -278,7 +332,13 @@ class TruthValue < Expression
   def evaluate(state = {})
     @value
   end
+
+  def variables(state)
+    return @value.variables()
+  end
 end
+
+
 
 # Representation of logical negation expressions, like `(!right)`.
 class Negation < Expression
@@ -294,6 +354,9 @@ class Negation < Expression
     !@right.evaluate(state)
   end
 
+  def variables(state)
+    throw "#{self.class.name}.evaluate() is not implemented!"
+  end
   attr_reader :right
 end
 
@@ -310,6 +373,10 @@ class LogicalAnd < Expression
 
   def evaluate(state = {})
     @left.evaluate(state) && @right.evaluate(state)
+  end
+
+  def variables(state)
+    throw "#{self.class.name}.evaluate() is not implemented!"
   end
 
   attr_reader :left
@@ -329,6 +396,10 @@ class LogicalOr < Expression
 
   def evaluate(state = {})
     @left.evaluate(state) || @right.evaluate(state)
+  end
+
+  def variables(state)
+    throw "#{self.class.name}.evaluate() is not implemented!"
   end
 
   attr_reader :left
